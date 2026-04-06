@@ -3,10 +3,11 @@ import { Lock, Mail, Eye, EyeOff, Folder } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useUser } from '../../context/UserContext';
+import toast from 'react-hot-toast';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { login } = useUser();
+    const { login, loginWithGoogle } = useUser();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,6 +23,19 @@ const Login = () => {
             navigate('/app');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        setError('');
+        setIsLoading(true);
+        try {
+            await loginWithGoogle();
+            navigate('/app');
+        } catch (err: any) {
+            setError(err.message || 'Google login failed');
         } finally {
             setIsLoading(false);
         }
@@ -77,7 +91,11 @@ const Login = () => {
                         </p>
                     </div>
 
-                    <button className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white p-3 rounded-xl transition-all group">
+                    <button 
+                        onClick={handleGoogleLogin} 
+                        disabled={isLoading}
+                        className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white p-3 rounded-xl transition-all group disabled:opacity-50"
+                    >
                         <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
                         <span className="font-medium group-hover:text-white transition-colors">Continue with Google</span>
                     </button>
@@ -117,7 +135,7 @@ const Login = () => {
                         <div className="space-y-2">
                             <div className="flex justify-between items-center">
                                 <label className="text-sm font-medium text-gray-300">Password</label>
-                                <a href="#" className="text-xs font-medium text-primary hover:text-primary/80">Forgot Password?</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); toast('Forgot Password coming soon! 🚧'); }} className="text-xs font-medium text-primary hover:text-primary/80">Forgot Password?</a>
                             </div>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

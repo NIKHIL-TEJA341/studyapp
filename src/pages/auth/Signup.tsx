@@ -3,10 +3,11 @@ import { Lock, Mail, Eye, EyeOff, Folder, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useUser } from '../../context/UserContext';
+import toast from 'react-hot-toast';
 
 const Signup = () => {
     const navigate = useNavigate();
-    const { register } = useUser();
+    const { register, loginWithGoogle } = useUser();
     const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -30,6 +31,19 @@ const Signup = () => {
             navigate('/app');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleGoogleSignup = async () => {
+        setError('');
+        setIsLoading(true);
+        try {
+            await loginWithGoogle();
+            navigate('/app');
+        } catch (err: any) {
+            setError(err.message || 'Google signup failed');
         } finally {
             setIsLoading(false);
         }
@@ -85,7 +99,11 @@ const Signup = () => {
                         </p>
                     </div>
 
-                    <button className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white p-3 rounded-xl transition-all group">
+                    <button 
+                        onClick={handleGoogleSignup}
+                        disabled={isLoading}
+                        className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white p-3 rounded-xl transition-all group disabled:opacity-50"
+                    >
                         <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
                         <span className="font-medium group-hover:text-white transition-colors">Sign up with Google</span>
                     </button>
@@ -169,7 +187,7 @@ const Signup = () => {
                         <div className="flex items-center">
                             <input id="terms" type="checkbox" className="h-4 w-4 rounded border-gray-600 bg-surface/50 text-primary focus:ring-primary/50" required />
                             <label htmlFor="terms" className="ml-2 block text-sm text-text-secondary">
-                                I agree to the <a href="#" className="text-primary hover:text-primary/80">Terms of Service</a> and <a href="#" className="text-primary hover:text-primary/80">Privacy Policy</a>
+                                I agree to the <a href="#" onClick={(e) => { e.preventDefault(); toast('Terms of Service coming soon!'); }} className="text-primary hover:text-primary/80">Terms of Service</a> and <a href="#" onClick={(e) => { e.preventDefault(); toast('Privacy Policy coming soon!'); }} className="text-primary hover:text-primary/80">Privacy Policy</a>
                             </label>
                         </div>
 

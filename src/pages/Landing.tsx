@@ -3,6 +3,7 @@ import { ArrowRight, Folder, Search, Monitor, Play, FileText, MessageSquare } fr
 import { motion } from 'framer-motion';
 import { useUser } from '../context/UserContext';
 import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const Landing = () => {
     const { user, isLoading } = useUser();
@@ -29,9 +30,9 @@ const Landing = () => {
                     </div>
 
                     <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-                        <a href="#" className="hover:text-white transition-colors">Home</a>
+                        <a href="#" onClick={(e) => { e.preventDefault(); toast('Coming soon! 🚀'); }} className="hover:text-white transition-colors">Home</a>
                         <a href="#features" className="hover:text-white transition-colors">Features</a>
-                        <a href="#" className="hover:text-white transition-colors">About</a>
+                        <Link to="/about" className="hover:text-white transition-colors">About</Link>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -91,7 +92,10 @@ const Landing = () => {
                         <Link to="/auth/signup" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-xl font-medium flex items-center justify-center gap-2 text-lg transition-all shadow-xl shadow-primary/20 hover:scale-105 active:scale-95">
                             Enter App <ArrowRight className="w-5 h-5" />
                         </Link>
-                        <button className="w-full sm:w-auto bg-surface hover:bg-white/5 border border-white/10 text-white px-8 py-4 rounded-xl font-medium text-lg transition-all hover:scale-105 active:scale-95">
+                        <button 
+                            onClick={() => toast('Interactive Demo coming soon! 🚀')}
+                            className="w-full sm:w-auto bg-surface hover:bg-white/5 border border-white/10 text-white px-8 py-4 rounded-xl font-medium text-lg transition-all hover:scale-105 active:scale-95"
+                        >
                             View Demo
                         </button>
                     </motion.div>
@@ -215,9 +219,9 @@ const Landing = () => {
                     </div>
 
                     <div className="flex gap-8 text-sm text-text-secondary">
-                        <a href="#" className="hover:text-white">Privacy Policy</a>
-                        <a href="#" className="hover:text-white">Terms of Service</a>
-                        <a href="#" className="hover:text-white">Contact</a>
+                        <a href="#" onClick={(e) => { e.preventDefault(); toast('Privacy Policy coming soon! 🚀'); }} className="hover:text-white">Privacy Policy</a>
+                        <a href="#" onClick={(e) => { e.preventDefault(); toast('Terms of Service coming soon! 🚀'); }} className="hover:text-white">Terms of Service</a>
+                        <a href="#" onClick={(e) => { e.preventDefault(); toast('Contact coming soon! 🚀'); }} className="hover:text-white">Contact</a>
                     </div>
 
                     <p className="text-xs text-gray-600">© 2026 StudyVault App. All rights reserved.</p>

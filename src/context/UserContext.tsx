@@ -23,6 +23,7 @@ interface UserContextType {
     logout: () => void;
     updateUser: (updates: Partial<UserProfile>) => Promise<void>;
     toggleNotification: (key: keyof UserProfile['notifications']) => void;
+    loginWithGoogle: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -99,6 +100,33 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('user', JSON.stringify(data)); // For API interceptor
     };
 
+    const loginWithGoogle = async () => {
+        try {
+            // 1. We dynamically import to avoid breaking initial load if firebase isn't configured
+            const { signInWithGooglePopup } = await import('../services/firebase');
+            
+            // 2. Trigger Google Popup via Firebase
+            const result = await signInWithGooglePopup();
+            const firebaseUser = result.user;
+
+            // 3. Send email/name to our backend to login/register implicitly
+            const { data } = await api.post('/auth/google', {
+                email: firebaseUser.email,
+                name: firebaseUser.displayName || 'Google User',
+            });
+
+            // 4. Update local state
+            setUser(data);
+            localStorage.setItem('studyvault_user', JSON.stringify(data));
+            localStorage.setItem('user', JSON.stringify(data));
+        } catch (error: any) {
+            if (error.code === 'auth/popup-closed-by-user') {
+                return; // Suppress popup close errors
+            }
+            throw new Error(error.response?.data?.message || 'Google Sign-In failed');
+        }
+    };
+
     const logout = () => {
         setUser(null);
         localStorage.removeItem('studyvault_user');
@@ -140,7 +168,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             register,
             logout,
             updateUser,
-            toggleNotification
+            toggleNotification,
+            loginWithGoogle
         }}>
             {children}
         </UserContext.Provider>

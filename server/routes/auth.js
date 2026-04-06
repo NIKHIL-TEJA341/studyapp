@@ -115,4 +115,43 @@ router.put('/profile', protect, async (req, res) => {
     }
 });
 
+// @desc    Authenticate/Register user with Google
+// @route   POST /api/auth/google
+// @access  Public
+router.post('/google', async (req, res) => {
+    const { name, email } = req.body;
+
+    try {
+        // 1. Check if user already exists
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // 2. If not, generate a random secure password for them (to satisfy the User model)
+            const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+            // Create new Google user
+            user = await User.create({
+                name,
+                email,
+                password: hashedPassword,
+            });
+        }
+
+        // 3. Complete auth by sending back JWT and details
+        res.json({
+            _id: user.id,
+            name: user.name,
+            email: user.email,
+            token: generateToken(user._id),
+            theme: user.theme,
+            notifications: user.notifications
+        });
+    } catch (error) {
+        console.error("Google Auth error:", error);
+        res.status(500).json({ message: 'Server error during Google Authentication' });
+    }
+});
+
 module.exports = router;

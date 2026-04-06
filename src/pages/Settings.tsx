@@ -2,9 +2,10 @@ import { User, Bell, Moon, Sun, Monitor, LogOut, Save } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const Settings = () => {
-    const { user, updateUser, toggleNotification, logout } = useUser();
+    const { user, updateUser, logout } = useUser();
     const navigate = useNavigate();
     const [name, setName] = useState(user?.name || '');
     const [email, setEmail] = useState(user?.email || '');
@@ -180,7 +181,7 @@ const Settings = () => {
                                         <p className="text-sm text-text-secondary">{item.desc}</p>
                                     </div>
                                     <button
-                                        onClick={() => toggleNotification(item.key as any)}
+                                        onClick={() => toast('Notifications feature coming soon! 🚀')}
                                         className={`w-12 h-6 rounded-full transition-colors relative ${user.notifications[item.key as keyof typeof user.notifications] ? 'bg-primary' : 'bg-gray-200 dark:bg-white/10'}`}
                                     >
                                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${user.notifications[item.key as keyof typeof user.notifications] ? 'left-7' : 'left-1'}`} />
